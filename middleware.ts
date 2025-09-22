@@ -1,20 +1,31 @@
-
 import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+
+const PUBLIC_ROUTES = [
+  '/login',
+];
 
 export default withAuth(
   function middleware(req) {
-    // Add any additional middleware logic here
+    if (PUBLIC_ROUTES.some(route => req.nextUrl.pathname === route)) {
+      return NextResponse.next();
+    }
+    return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
         // Allow access to login page
-        if (req.nextUrl.pathname === "/login") {
+        if (PUBLIC_ROUTES.some(route => req.nextUrl.pathname === route)) {
           return true;
         }
         
-        // Require authentication for all other pages
-        return !!token;
+        // Se houver erro no token ou não houver token, não autorize
+        if (!token || token.error === "RefreshAccessTokenError") {
+          return false;
+        }
+
+        return true;
       },
     },
   }

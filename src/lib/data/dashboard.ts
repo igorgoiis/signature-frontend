@@ -1,0 +1,1 @@
+export { dashboardService } from '@/lib/api/services/dashboardService';

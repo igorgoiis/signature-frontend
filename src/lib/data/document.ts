@@ -1,0 +1,1 @@
+export { documentService } from '@/lib/api/services/documentService';
