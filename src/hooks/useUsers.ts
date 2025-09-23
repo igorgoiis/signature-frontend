@@ -88,7 +88,7 @@ export const useUpdateUser = () => {
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, string>({
+  return useMutation<void, Error, number>({
     mutationFn: async (userId) => {
       const response = await userService.deleteUser(userId);
       if (!response.success) {

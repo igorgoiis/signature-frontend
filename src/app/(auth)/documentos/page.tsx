@@ -120,7 +120,7 @@ export default function DocumentosPage() {
   };
 
   const filteredDocuments = documents.filter(doc =>
-    (doc.title || doc.fileName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (doc.title || doc.file.fileName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
     (doc.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
     (doc.description || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -239,7 +239,7 @@ export default function DocumentosPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 truncate">
-                        {document.title || document.fileName}
+                        {document.title || document.file.fileName}
                       </h3>
                       {document.description && (
                         <p className="text-sm text-gray-600 truncate">
@@ -292,7 +292,7 @@ export default function DocumentosPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDownload(document.id, document.fileName)}
+                      onClick={() => handleDownload(document.id, document.file.fileName)}
                     >
                       <Download className="h-4 w-4" />
                     </Button>
