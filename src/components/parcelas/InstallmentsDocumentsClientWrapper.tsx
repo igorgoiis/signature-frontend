@@ -3,7 +3,7 @@
 import { Document } from "@/types/document.type";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useInstallmentsDocuments } from "@/hooks/use-installments-documents";
-import { ChevronDownIcon, Eye, FileText, HandCoins, Loader2, Plus } from "lucide-react";
+import { ChevronDownIcon, Eye, FileText, HandCoins, Loader2, LoaderCircleIcon, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -20,6 +20,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { DatePicker } from "../common/DatePicker";
 import { Controller } from "react-hook-form";
+import { formatUTCDateToUserTimezone } from "@/lib/date-helper";
 
 interface InstallmentsDocumentsClientWrapperProps {
   initialData: Document[];
@@ -27,12 +28,12 @@ interface InstallmentsDocumentsClientWrapperProps {
 }
 
 export default function InstallmentsDocumentsClientWrapper({ initialData }: InstallmentsDocumentsClientWrapperProps) {
-  console.log({ initialData})
   const {
     documentsInstallments,
     loading,
     installmentForPayment,
     control,
+    formIsSubmitting,
     setInstallmentPayment,
     handleSubmit,
     handleInstallmentPaymentSubmit
@@ -62,15 +63,15 @@ export default function InstallmentsDocumentsClientWrapper({ initialData }: Inst
         <div className='flex flex-col justify-between gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors'>
           <div className="flex flex-1 items-center justify-between">
             <div className="grid grid-cols-2 gap-2">
-              <p className="text-xs">Total de parcelas: <strong>{installments.length}</strong></p>
+              <p className="text-xs">Total de parcelas vencidas e por vencer: <strong>{installments.length}</strong></p>
               <p className="text-xs">
-                Valor total das parcelas: <strong>{formatCurrency(getTotalInstallmentsAmount(installments) * 100)}</strong>
+                Valor total das parcelas vencidas e por vencer: <strong>{formatCurrency(getTotalInstallmentsAmount(installments) * 100)}</strong>
               </p>
               <p className="text-xs">
                 Valor total das parcelas atrasadas: <strong>{formatCurrency(getTotalAmountOfOverdueInstallments(installments) * 100)}</strong>
               </p>
               <p className="text-xs">
-                Valor total das parcelas à vencer nos próximos 5 dias: <strong>{formatCurrency(getTotalAmountOfTheInstallmentsDueInTheFiveDays(installments) * 100)}</strong>
+                Valor total das parcelas por vencer nos próximos 5 dias: <strong>{formatCurrency(getTotalAmountOfTheInstallmentsDueInTheFiveDays(installments) * 100)}</strong>
               </p>
             </div>
             <CollapsibleTrigger asChild className='group'>
@@ -87,76 +88,14 @@ export default function InstallmentsDocumentsClientWrapper({ initialData }: Inst
                   <h5 className="text-sm font-medium">{installment.installmentNumber}ª Parcela</h5>
                   <div className="grid grid-cols-3 mt-4">
                     <p className="text-xs">Valor: {formatCurrency(installment.amount * 100)}</p>
-                    <p className="text-xs">Data de vencimento: {format(parse(installment.dueDate, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy")}</p>
+                    <p className="text-xs">Data de vencimento: {format(formatUTCDateToUserTimezone(installment.dueDate), 'dd/MM/yyyy')}</p>
                   </div>
                 </div>
                 <div className="flex justify-center items-center">
-                  <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="sm" className="gap-2 py-1 px-4 bg-green-600 hover:bg-green-700" onClick={() => setInstallmentPayment(installment)}>
-                          <HandCoins className="h-5 w-5" />
-                          <span className="text-xs">Pagar parcela</span>
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className='data-[state=open]:!zoom-in-100 data-[state=open]:slide-in-from-bottom-20 data-[state=open]:duration-800 sm:max-w-[425px]'>
-                        <DialogHeader>
-                          <DialogTitle>Pagar {installmentForPayment?.installmentNumber}ª Parcela</DialogTitle>
-                          <DialogDescription>
-                            Para realizar o pagamento da parcela precisamos que informe a data de pagamento e anexe o comprovante
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className='grid gap-4'>
-                          <div className='grid gap-3'>
-                            <Controller
-                              control={control}
-                              name="date"
-                              render={({ field: { onChange, value }, fieldState }) => (
-                                <>
-                                  <DatePicker
-                                    label="Data de pagamento"
-                                    onChange={onChange}
-                                    date={value}
-                                  />
-                                  {fieldState.error && (
-                                    <span className="text-red-500 text-xs">{fieldState.error.message}</span>
-                                  )}
-                                </>
-                              )}
-                            />
-                          </div>
-                          <div className='grid gap-3'>
-                            <Controller
-                              control={control}
-                              name="proof"
-                              render={({ field: { value, onChange, name }, fieldState }) => (
-                                <div className='w-full max-w-xs space-y-2'>
-                                  <Label htmlFor={name}>Comprovante de pagamento</Label>
-                                  <Input
-                                    id={name}
-                                    type='file'
-                                    accept=".pdf,.png,.jpeg,.jpg"
-                                    className='text-muted-foreground file:border-input file:text-foreground p-0 pr-3 italic file:me-3 file:h-full file:border-0 file:border-e file:border-solid file:bg-transparent file:px-3 file:text-sm file:font-medium file:not-italic'
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0]
-                                      onChange(file)
-                                    }}
-                                  />
-                                  {fieldState.error && (
-                                    <span className="text-red-500 text-xs">{fieldState.error.message}</span>
-                                  )}
-                                </div>
-                              )}
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button variant='outline' onClick={() => setInstallmentPayment(null)}>Cancelar</Button>
-                          </DialogClose>
-                          <Button onClick={handleSubmit(handleInstallmentPaymentSubmit)}>Pagar parcela</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                  </Dialog>
+                  <Button size="sm" className="gap-2 py-1 px-4 bg-green-600 hover:bg-green-700" onClick={() => setInstallmentPayment(installment)}>
+                    <HandCoins className="h-5 w-5" />
+                    <span className="text-xs">Pagar parcela</span>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -168,8 +107,6 @@ export default function InstallmentsDocumentsClientWrapper({ initialData }: Inst
 
   const renderSignatureStatusBadge = (signatory: DocumentSignatory) => {
     const { Icon, config } = getSignatureStatusBadge(signatory.status);
-
-    console.log({ Icon, config, signatory });
   
     return (
       <Badge variant={config.variant} className="gap-1">
@@ -311,6 +248,74 @@ export default function InstallmentsDocumentsClientWrapper({ initialData }: Inst
                     </div>
                     {renderInstallments(document.installments)}
                   </div>
+
+                  <Dialog open={!!installmentForPayment} onOpenChange={() => setInstallmentPayment(null)}>
+                    <DialogContent className='data-[state=open]:!zoom-in-100 data-[state=open]:slide-in-from-bottom-20 data-[state=open]:duration-800 sm:max-w-[425px]'>
+                      <DialogHeader>
+                        <DialogTitle>Pagar {installmentForPayment?.installmentNumber}ª Parcela</DialogTitle>
+                        <DialogDescription>
+                          Para realizar o pagamento da parcela precisamos que informe a data de pagamento e anexe o comprovante
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className='grid gap-4'>
+                        <div className='grid gap-3'>
+                          <Controller
+                            control={control}
+                            name="date"
+                            render={({ field: { onChange, value }, fieldState }) => (
+                              <>
+                                <DatePicker
+                                  label="Data de pagamento"
+                                  onChange={onChange}
+                                  date={value}
+                                />
+                                {fieldState.error && (
+                                  <span className="text-red-500 text-xs">{fieldState.error.message}</span>
+                                )}
+                              </>
+                            )}
+                          />
+                        </div>
+                        <div className='grid gap-3'>
+                          <Controller
+                            control={control}
+                            name="proof"
+                            render={({ field: { value, onChange, name }, fieldState }) => (
+                              <div className='w-full max-w-xs space-y-2'>
+                                <Label htmlFor={name}>Comprovante de pagamento</Label>
+                                <Input
+                                  id={name}
+                                  type='file'
+                                  accept=".pdf,.png,.jpeg,.jpg"
+                                  className='text-muted-foreground file:border-input file:text-foreground p-0 pr-3 italic file:me-3 file:h-full file:border-0 file:border-e file:border-solid file:bg-transparent file:px-3 file:text-sm file:font-medium file:not-italic'
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    onChange(file)
+                                  }}
+                                />
+                                {fieldState.error && (
+                                  <span className="text-red-500 text-xs">{fieldState.error.message}</span>
+                                )}
+                              </div>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button variant='outline' onClick={() => setInstallmentPayment(null)}>Cancelar</Button>
+                        </DialogClose>
+                        <Button onClick={handleSubmit(handleInstallmentPaymentSubmit)} disabled={formIsSubmitting}>
+                          {formIsSubmitting ? (
+                            <>
+                              <LoaderCircleIcon className='animate-spin mr-3' />
+                              <span>Pagando</span>
+                            </>
+                          ) : "Pagar parcela" }
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </motion.div>
               ))}
             </div>

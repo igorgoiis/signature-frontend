@@ -59,6 +59,8 @@ export default async function DashboardPage() {
     serverError = (error as Error).message || "Ocorreu um erro inesperado ao carregar o dashboard.";
   }
 
+  console.log({ initialDashboardData })
+
   // 3. Renderização condicional baseada no sucesso da busca de dados no servidor
   if (serverError || !initialDashboardData) {
     // Se houver um erro na busca inicial de dados, exibe uma mensagem de erro simples

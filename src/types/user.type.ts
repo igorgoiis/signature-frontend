@@ -3,6 +3,7 @@ import { Sector } from "./sector.type";
 export enum UserRole {
   ADMIN = "admin",
   USER = "user",
+  FINANCIAL = "financial",
 }
 
 

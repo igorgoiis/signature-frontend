@@ -26,6 +26,7 @@ import { documentService } from "@/lib/data/document";
 import { uploadFile } from "@/lib/data/files";
 import { CreateDocumentDTO, DocumentNature } from "@/types/document.type";
 import DocumentNatureSelect from "@/components/upload/DocumentNatureSelect";
+import { formatUserTimezoneToUTCDate } from "@/lib/date-helper";
 
 // Definir o esquema de validação com Zod
 const formSchema = z.object({
@@ -211,7 +212,7 @@ export default function UploadPage() {
         })),
         installments: installments.map(inst => ({
           installmentNumber: inst.installmentNumber,
-          dueDate: inst.dueDate,
+          dueDate: formatUserTimezoneToUTCDate(inst.dueDate).toISOString(),
           amount: +(inst.amount / 100).toFixed(2),
         })),
         rateio: rateioItems.map(item => ({

@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bell, User, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
+import { UserRole } from "@/types/user.type";
 
 export function Header() {
   const { data: session } = useSession();
@@ -67,12 +68,14 @@ export function Header() {
           >
             Documentos
           </Link>
-          <Link
-            href="/parcelas"
-            className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
-          >
-            Parcelas
-          </Link>
+          {session?.user.role === UserRole.FINANCIAL || session?.user.role === UserRole.ADMIN && (
+              <Link
+              href="/parcelas"
+              className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              Parcelas
+            </Link>
+          )}
           {session?.user?.role === "admin" && (
             <>
               <Link

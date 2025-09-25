@@ -9,9 +9,9 @@ export enum RecentActivityActions {
 
 export interface DashboardStats {
   totalDocuments: number;
-  pendingSignatures: number;
-  completedSignatures: number;
-  totalUsers?: number;
+  pendingDocuments: number;
+  approvedDocuments: number;
+  activeUsers?: number;
 }
 
 export interface RecentActivityItem {

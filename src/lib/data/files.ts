@@ -3,34 +3,34 @@ import { FileType } from '../../types/file.type';
 
 export { fileService } from '@/lib/api/services/fileService';
 
-const session = await getSession();
-const token = session?.accessToken || '';
-
 export const uploadFile = async (file: File): Promise<{ success: boolean, message?: string, data?: FileType }> => {
-    const formData = new FormData();
-    formData.append('file', file);
+  const session = await getSession();
+  const token = session?.accessToken || '';
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+  const formData = new FormData();
+  formData.append('file', file);
 
-    const response = await fetch(`${baseUrl}/files/upload`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Authorization': `Bearer ${token}`, // Exemplo de header adicional
-      },
-    });
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
-    if (!response.ok) {
-      return {
-        success: false,
-        message: `Erro ao fazer upload do arquivo: ${response.statusText}`,
-      }
-    }
+  const response = await fetch(`${baseUrl}/files/upload`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'Authorization': `Bearer ${token}`, // Exemplo de header adicional
+    },
+  });
 
-    const data = await response.json() as FileType;
-
+  if (!response.ok) {
     return {
-      success: true,
-      data,
-    };
+      success: false,
+      message: `Erro ao fazer upload do arquivo: ${response.statusText}`,
+    }
+  }
+
+  const data = await response.json() as FileType;
+
+  return {
+    success: true,
+    data,
+  };
 }

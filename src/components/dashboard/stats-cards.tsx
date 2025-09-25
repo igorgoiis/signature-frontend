@@ -13,6 +13,7 @@ interface StatsCardsProps {
 }
 
 export function StatsCards({ stats, loading = false }: StatsCardsProps) {
+  console.log({ stats });
   // Mapeia as propriedades antigas para as novas conforme DashboardStats
   const cards = [
     {
@@ -24,21 +25,21 @@ export function StatsCards({ stats, loading = false }: StatsCardsProps) {
     },
     {
       title: "Pendentes",
-      value: stats?.pendingSignatures ?? 0,
+      value: stats?.pendingDocuments ?? 0,
       description: "Aguardando assinatura",
       icon: Clock,
       color: "bg-yellow-500",
     },
     {
       title: "Concluídos",
-      value: stats?.completedSignatures ?? 0,
+      value: stats?.approvedDocuments ?? 0,
       description: "Documentos com assinatura concluída",
       icon: CheckCircle,
       color: "bg-green-500",
     },
     {
       title: "Total de Usuários",
-      value: stats?.totalUsers ?? 0,
+      value: stats?.activeUsers ?? 0,
       description: "Usuários registrados no sistema",
       icon: Users,
       color: "bg-purple-500",

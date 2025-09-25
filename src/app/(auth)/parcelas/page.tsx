@@ -1,7 +1,9 @@
+import UnauthorizedAccess from "@/components/common/Unauthorized";
 import InstallmentsDocumentsClientWrapper from "@/components/parcelas/InstallmentsDocumentsClientWrapper";
 import { authOptions } from "@/lib/auth";
 import { documentService } from "@/lib/data/document";
 import { Document } from "@/types/document.type";
+import { UserRole } from "@/types/user.type";
 import { CircleX } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -12,6 +14,12 @@ export default async function InstallmentsDocumentsPage() {
 
   if (!session || !session.user || !session.accessToken) {
     redirect('/login'); // Redireciona para a página de login se não houver sessão válida
+  }
+
+  if (session.user.role && ![UserRole.ADMIN, UserRole.FINANCIAL].includes(session.user.role as UserRole)) {
+    return (
+      <UnauthorizedAccess variant="detailed" />
+    );
   }
 
   let initialInstallmentsDocuments: Document[] | null = null;
@@ -26,10 +34,8 @@ export default async function InstallmentsDocumentsPage() {
     });
 
     if (success && data) {
-      console.log({ data });
       initialInstallmentsDocuments = data;
     } else {
-      console.log({ error, message })
       // Trata o erro retornado pelo ApiResponse
       serverError = "Não foi possível carregar os dados iniciais das parcelas dos documentos.";
     }

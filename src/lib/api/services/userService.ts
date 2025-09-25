@@ -3,7 +3,7 @@
 import { BaseService } from './baseService';
 import { ApiResponse, RequestConfig } from '../core/types';
 import { ApiClient } from '../core/apiClient'; // Importa o ApiClient
-import { User } from '@/types/user.type';
+import { User, UserRole } from '@/types/user.type';
 
 /**
  * Interface para filtros de busca de usuários, incluindo paginação e termo de pesquisa
@@ -24,7 +24,7 @@ export interface UserCreateRequest {
   name: string;
   email: string;
   password?: string;
-  role: 'admin' | 'user';
+  role: UserRole;
   sectorId?: number;
 }
 

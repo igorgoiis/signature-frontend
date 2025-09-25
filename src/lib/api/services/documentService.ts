@@ -130,8 +130,8 @@ export class DocumentService extends BaseService {
     installmentId: number,
     body: { fileId: number; paymentDate: string; },
     config?: RequestConfig
-  ) {
-    return this.post<string>(`${documentId}/pay/installment/${installmentId}`, body, config);
+  ): Promise<ApiResponse<{ message: string }>> {
+    return this.post<{ message: string }>(`${documentId}/pay/installment/${installmentId}`, body, config);
   }
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -24,6 +24,7 @@ interface UseDashboardResult {
 }
 
 export function useDashboard({ initialData }: UseDashboardProps): UseDashboardResult {
+  console.log({ initialData });
   const { data: session } = useSession();
   const { toast } = useToast();
 
@@ -98,6 +99,12 @@ export function useDashboard({ initialData }: UseDashboardProps): UseDashboardRe
       setLoading(false);
     }
   }, [session, toast]);
+
+  useEffect(() => {
+    setStats(initialData.stats);
+    setRecentDocuments(initialData.recentDocuments);
+    setRecentActivity(initialData.recentActivity);
+  }, [initialData]);
 
   return {
     stats,

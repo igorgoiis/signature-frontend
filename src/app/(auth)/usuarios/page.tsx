@@ -68,7 +68,7 @@ interface UserFormData {
   name: string;
   email: string;
   password?: string;
-  role: 'admin' | 'user';
+  role: UserRole;
   sectorId?: number;
 }
 
@@ -86,7 +86,7 @@ export default function UsuariosPage() {
     name: "",
     email: "",
     password: "",
-    role: "user",
+    role: UserRole.USER,
     sectorId: undefined,
   });
   const [formLoading, setFormLoading] = useState(false);
@@ -135,7 +135,7 @@ export default function UsuariosPage() {
       name: "",
       email: "",
       password: "",
-      role: "user",
+      role: UserRole.USER,
       sectorId: undefined,
     });
   };
@@ -328,7 +328,7 @@ export default function UsuariosPage() {
                   <Label htmlFor="role">Role</Label>
                   <Select
                     value={formData.role}
-                    onValueChange={(value: 'admin' | 'user') => setFormData({...formData, role: value})}
+                    onValueChange={(value: UserRole) => setFormData({...formData, role: value})}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione a role" />
@@ -547,7 +547,7 @@ export default function UsuariosPage() {
                 <Label htmlFor="edit-role">Role</Label>
                 <Select
                   value={formData.role}
-                  onValueChange={(value: 'admin' | 'user') => setFormData({...formData, role: value})}
+                  onValueChange={(value: UserRole) => setFormData({...formData, role: value})}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a role" />
@@ -555,6 +555,7 @@ export default function UsuariosPage() {
                   <SelectContent>
                     <SelectItem value="user">Usuário</SelectItem>
                     <SelectItem value="admin">Administrador</SelectItem>
+                    <SelectItem value="financial">Financeiro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

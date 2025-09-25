@@ -47,7 +47,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ApiService } from "@/lib/api";
 import { documentService } from "@/lib/data/document";
@@ -56,6 +56,7 @@ import { Document } from "@/types/document.type";
 import { formatCurrency, getSignatureStatusBadge } from "@/lib/utils";
 import { DocumentSignatory, SignatoryStatus } from "@/types/document-signatory.type";
 import { authService } from "@/lib/api/services/authService";
+import { formatUTCDateToUserTimezone } from "@/lib/date-helper";
 
 const getStatusBadge = (status: string) => {
   const statusConfig = {
@@ -282,7 +283,7 @@ export default function DocumentViewPage() {
     if (!installments || !Array.isArray(installments)) return [];
     return installments.map(installment => ({
       ...installment,
-      formattedDueDate: new Date(installment.dueDate).toLocaleDateString('pt-BR'),
+      formattedDueDate: format(formatUTCDateToUserTimezone(installment.dueDate), 'dd/MM/yyyy'),
       formattedAmount: formatCurrency(Number(installment.amount) * 100)
     }));
   };
